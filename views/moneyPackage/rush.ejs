@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Todo</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+  </head>
+  <body>
+    <h1>抢红包</h1>
+    <h2>红包信息</h2>
+    <table border='1'>
+      <thead>
+        <tr>
+          <td>总金额</td>
+          <td>总份数</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><%= moneyPackage.total %></td>
+          <td><%= moneyPackage.count %></td>
+        </tr>
+      </tbody>
+    </table>
+    <form action="/moneyPackage/<%= moneyPackage.id%>/rush" method="POST">
+      <span>我是：</span><select name="user">
+        <% users.forEach(function(user) { %>
+        <option value='<%= user.id %>'><%= user.get('username') %></option>
+        <% }) %>
+      </select>
+      <input type="submit" value="抢" />
+    </form>
+  </body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Todo</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+  </head>
+  <body>
+    <h1>红包控制台</h1>
+    <form action="/moneyPackage/generate" method="POST">
+      <span>总金额：</span><input type="text" name="total" value="100.00" />
+      <span>总份数：</span><input type="text" name="count" value="10" />
+      <input type="submit" value="生成" />
+    </form>
+    <h2>红包列表</h2>
+    <table border='1'>
+      <thead>
+        <tr>
+          <td>总金额</td>
+          <td>总份数</td>
+          <td>状态</td>
+          <td>生成时间</td>
+          <td>操作</td>
+        </tr>
+      </thead>
+      <tbody>
+        <% moneyPackages.forEach(function(moneyPackage) { %>
+        <tr>
+          <td><%= moneyPackage.get('total') %></td>
+          <td><%= moneyPackage.get('count') %></td>
+          <td><%= moneyPackage.get('status') %></td>
+          <td><%= moneyPackage.createdAt %></td>
+          <td>
+            <% if (moneyPackage.get('status') === 'init') { %>
+              <form action="/moneyPackage/<%= moneyPackage.id%>/ready" method="POST">
+                <input type='submit' value='就绪' />
+              </form>
+            <% } else if (moneyPackage.get('status') === 'ready') { %>
+              <a href="/moneyPackage/<%= moneyPackage.id%>/rush">去抢</a>
+            <% } %>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </body>
+</html>
