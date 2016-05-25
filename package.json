@@ -1,5 +1,5 @@
 {
-  "name": "node-js-getting-started",
+  "name": "lean-cache-demos",
   "version": "1.0.0",
   "description": "A sample Node.js app using Express 4",
   "main": "server.js",
