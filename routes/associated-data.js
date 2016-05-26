@@ -117,7 +117,7 @@ function fetchUsersFromCache(userIds) {
   });
 }
 
-/* User 存储在 LeanCache 中的键名 */
+/* User 存储在 LeanCache 中的键名，值是经过 JSON 序列化的 AV.Object */
 function redisUserKey(userId) {
   return 'users:' + userId;
 }
