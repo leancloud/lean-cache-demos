@@ -13,7 +13,7 @@ var redisClient = require('../redisConn');
  *
  * 例如我们有一个社区，Post 代表一篇文章，author 字段是一个 User 对象，代表文章的作者。
  * 在这个社区中活跃用户的数量和文章数量相比较小，且用户对象上的数据也不常变化（可以通过 User 的 afterUpdate Hook 来刷新缓存）。
-*/
+ */
 
 var Post = AV.Object.extend('Post');
 
@@ -129,6 +129,6 @@ function redisUserKey(userId) {
  * - 这个例子侧重展示关联数据，但在其实 Post 本身也是可以缓存的。
  * - 其实获取一个 User 是获取一组 User 的特例，完全可以用 `fetchUsersFromCache([id])` 代替 `fetchUserFromCache(id)`.
  * - 这个例子没有考虑到被关联的用户不存在的情况，如果一个 Post 关联了一个不存在的用户，那么会反复地从云存储查询这个用户，可以通过设置一个特殊的、表示用户不存在的值缓存到 LeanCache.
-*/
+ */
 
 module.exports = router;

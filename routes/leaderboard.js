@@ -1,6 +1,7 @@
 var router = require('express').Router();
 var AV = require('leanengine');
 var moment = require('moment');
+var Promise = require('bluebird');
 
 var redisClient = require('../redisConn');
 
@@ -10,22 +11,55 @@ var redisClient = require('../redisConn');
  * 排行榜的查询会比较频繁，而且被查询的都是同一份数据，且数据变化则较少，比较适合维护在 LeanCache 中。
  * 这个例子中我们将允许用户提交自己的游戏分数，然后在 LeanCache 中维护一个全部用户的排行榜，
  * 每天凌晨会将前一天的排行归档到云存储中，并清空排行榜。
-*/
+ *
+ * 这个例子支持两种计算分数的方法 —— 最高分数和累计分数，在实际应用中你应该根据情况在两者中选择一个，删除另外一个：
+ *
+ * - 最高分数：只记录用户在一天中最高的分数，如果提交一个较低的分数则会被忽略
+ * - 累计分数：用户提交的所有分数会被累加到一起进行排名
+ */
 
 var Leaderboard = AV.Object.extend('Leaderboard');
 
-/* 提供给用户提交分数的接口 */
-router.post('/submit', function(req, res, next) {
-  redisClient.zaddAsync(redisLeaderboardKey(), req.body.score, req.body.userId).then(function() {
+/* 提供给用户提交最高分的接口 */
+router.post('/submitHighest', function(req, res, next) {
+  // 用于提交最高分数的 LUA 脚本，只会在新分数比最高分还高时才更新分数
+  var script = 'local highest = tonumber(redis.call("ZSCORE", KEYS[1], ARGV[2]))\n' +
+               'if highest == nil or tonumber(ARGV[1]) > highest then redis.call("ZADD", KEYS[1], ARGV[1], ARGV[2]) end';
+
+  redisClient.evalAsync(script, 1, redisLeaderboardKey(), req.body.score, req.body.userId).then(function(r) {
+    res.send();
+  }).catch(next);
+});
+
+/* 提供给用户提交累计分数的接口 */
+router.post('/submitAccumulative', function(req, res, next) {
+  redisClient.zaddAsync(redisLeaderboardKey(), req.body.score, req.body.userId, 'INCR').then(function() {
     res.send();
   }).catch(next);
 });
 
 /* 查询排行榜前若干名的接口 */
-router.get('/top', function(req, res, next) {
+router.get('/users', function(req, res, next) {
   var limit = req.query.limit || 100;
   redisClient.zrevrangeAsync(redisLeaderboardKey(), 0, limit - 1, 'WITHSCORES').then(function(leaderboard) {
     res.json(parseLeaderboard(leaderboard));
+  }).catch(next);
+});
+
+/* 查询一个用户在榜单上的排名 */
+router.get('/users/:userId', function(req, res, next) {
+  redisClient.zscoreAsync(redisLeaderboardKey(), req.params.userId).then(function(score) {
+    if (score === null) {
+      res.sendStatus(404);
+    } else {
+      return redisClient.zrevrankAsync(redisLeaderboardKey(), req.params.userId).then(function(index) {
+        res.json({
+          ranking: index + 1,
+          userId: req.params.userId,
+          score: parseInt(score)
+        });
+      });
+    }
   }).catch(next);
 });
 
@@ -76,8 +110,7 @@ function chunk(array, size) {
  * 更进一步
  *
  * - 这个排行榜中只有用户 ID, 你可能需要结合「缓存关联数据示例」来一并显示用户的昵称等信息。
- * - 这个例子中比较的是「最高分」，如果要比较「累计分数」，可以为 ZADD 传递一个 INCR 参数。
  * - 为了防止 archiveLeaderboard 被重复调用，建议在 Leaderboard 的 date 字段上设置唯一索引。
-*/
+ */
 
 module.exports = router;
