@@ -48,9 +48,9 @@ router.get('/posts', function(req, res, next) {
 /* 查询单个 Post */
 router.get('/posts/:id', function(req, res, next) {
   new AV.Query(Post).get(req.params.id).then(function(post) {
-    return fetchUsersFromCache([post.get('author').id]).then(function(users) {
+    return fetchUserFromCache(post.get('author').id).then(function(user) {
       res.json(_.extend(post.toJSON(), {
-        author: users[0]
+        author: user
       }));
     });
   }).catch(next);
@@ -61,10 +61,27 @@ AV.Cloud.afterUpdate('_User', function(request) {
   redisClient.delAsync(redisUserKey(request.object.id)).catch(console.error)
 });
 
-/* 从缓存中读取一组 User, 如果没有找到则从云存储中查询 */
-function fetchUsersFromCache(userIds) {
-  var uniqueUserIds = _.uniq(userIds);
+/* 从缓存中读取一个 User, 如果没有找到则从云存储中查询 */
+function fetchUserFromCache(userId) {
+  return redisClient.getAsync(userId).then(function(cachedUser) {
+    if (cachedUser) {
+      // 反序列化为 AV.Object
+      return new AV.User(JSON.parse(cachedUser), {parse: true});
+    } else {
+      new AV.Query(AV.User).get(userId).then(function(user) {
+        if (user) {
+          // 将序列化后的 JSON 字符串存储到 LeanCache
+          redisClient.setAsync(redisUserKey(userId), JSON.stringify(user)).catch(console.error);
+        }
 
+        return user;
+      });
+    }
+  });
+}
+
+/* 从缓存中读取一组 User, 如果没有找到则从云存储中查询（会进行去重并合并为一个查询）*/
+function fetchUsersFromCache(userIds) {
   // 先从 LeanCache 中查询
   return redisClient.mgetAsync(_.uniq(userIds).map(redisUserKey)).then(function(cachedUsers) {
     var parsedUsers = cachedUsers.map(function(user) {
@@ -86,10 +103,10 @@ function fetchUsersFromCache(userIds) {
       }
     }).then(function(latestUsers) {
       if (latestUsers.length) {
-        // 将从云存储中查询到的 User 缓存到 LeanCache, 此次为异步
+        // 将从云存储中查询到的 User 缓存到 LeanCache, 此处为异步
         redisClient.msetAsync(_.flatten(latestUsers.map(function(user) {
           return [redisUserKey(user.id), JSON.stringify(user)];
-        })));
+        }))).catch(console.error);
       }
 
       // 将来自缓存和来自云存储的用户组合到一起作为结果返回
@@ -110,6 +127,8 @@ function redisUserKey(userId) {
  *
  * - 如果数据量较大，担心占用过多内存，可以考虑为缓存设置过期时间。
  * - 这个例子侧重展示关联数据，但在其实 Post 本身也是可以缓存的。
+ * - 其实获取一个 User 是获取一组 User 的特例，完全可以用 `fetchUsersFromCache([id])` 代替 `fetchUserFromCache(id)`.
+ * - 这个例子没有考虑到被关联的用户不存在的情况，如果一个 Post 关联了一个不存在的用户，那么会反复地从云存储查询这个用户，可以通过设置一个特殊的、表示用户不存在的值缓存到 LeanCache.
 */
 
 module.exports = router;
