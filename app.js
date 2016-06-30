@@ -22,6 +22,10 @@ app.use('/', require('./routes/index'));
 app.use('/money-package', require('./routes/money-package'));
 app.use('/associated-data', require('./routes/associated-data'));
 app.use('/leaderboard', require('./routes/leaderboard'));
+app.use('/task-queue', require('./routes/task-queue'));
+app.use('/redlock', require('./routes/redlock'));
+app.use('/readonly', require('./routes/readonly'));
+app.use('/captcha', require('./routes/captcha'));
 
 app.use(function(err, req, res, next) { // jshint ignore:line
   var statusCode = err.status || 500;
