@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title>Todo</title>
+    <title>LeanCache Node.js Demos</title>
     <link rel="stylesheet" href="/stylesheets/style.css">
   </head>
   <body>
@@ -21,7 +21,7 @@
         </tr>
       </tbody>
     </table>
-    <form action="/moneyPackage/<%= moneyPackage.id%>/rush" method="POST">
+    <form action="/money-package/<%= moneyPackage.id%>/rush" method="POST">
       <span>我是：</span><select name="user">
         <% users.forEach(function(user) { %>
         <option value='<%= user.id %>'><%= user.get('username') %></option>

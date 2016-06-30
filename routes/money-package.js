@@ -4,7 +4,7 @@ var Q = require('q');
 var debug = require('debug')('app');
 
 var AV = require('leanengine');
-var redisConn = require('../redisConn');
+var redisConn = require('../redis').redisClient;
 
 var MoneyPackage = AV.Object.extend('MoneyPackage');
 var User = AV.Object.extend('_User');
@@ -14,12 +14,12 @@ router.get('/', function(req, res, next) {
   query.limit(10);
   query.addDescending('createdAt');
   query.find().then(function(pkgs) {
-    res.render('moneyPackage', {
+    res.render('money-package', {
       moneyPackages: pkgs
     });
   }).catch(function(err) {
     if (err.code === 101) {
-      res.render('moneyPackage/index', {
+      res.render('money-package/index', {
         moneyPackages: []
       });
     }
@@ -35,7 +35,7 @@ router.post('/generate', function(req, res, next) {
     packages: pkgs,
     status: 'init'
   }).then(function() {
-    res.redirect('/moneyPackage');
+    res.redirect('/money-package');
   });
 });
 
@@ -58,7 +58,7 @@ router.post('/:id/ready', function(req, res, next) {
     moneyPackage.set('status', 'ready');
     return moneyPackage.save();
   }).then(function() {
-    res.redirect('/moneyPackage');
+    res.redirect('/money-package');
   }).catch(function(err) {
     next(err);
   });
@@ -69,7 +69,7 @@ router.get('/:id/rush', function(req, res, next) {
     Q.ninvoke(redisConn, 'hget', 'moneyPackages', req.params.id),
     new AV.Query(User).find() // 查询 User 只是为了再抢红包时模拟用户身份
   ]).then(function(moneyPackage, users) {
-    res.render('moneyPackage/rush', {
+    res.render('money-package/rush', {
       moneyPackage: JSON.parse(moneyPackage),
       users: users
     });
@@ -90,7 +90,7 @@ router.post('/:id/rush', function(req, res, next) {
   }).then(function(newLength) {
     // 即使插入队列成功也不代表抢到红包，因为在上面查询队列长度到添加队列期间可能队列已经被别的请求增加了，
     // 所以根据 Redis 返回的长度判断抢红包是否有效。
-    if (moneyPackage.count < newLength) { 
+    if (moneyPackage.count < newLength) {
       throw new Error('红包已抢完');
     }
     res.send('恭喜，抢到红包 ' + moneyPackage.packages[newLength - 1] + ' 元');

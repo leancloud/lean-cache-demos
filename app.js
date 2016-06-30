@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use('/', require('./routes/index'));
-app.use('/moneyPackage', require('./routes/moneyPackage'));
+app.use('/money-package', require('./routes/money-package'));
 app.use('/associated-data', require('./routes/associated-data'));
 app.use('/leaderboard', require('./routes/leaderboard'));
 
