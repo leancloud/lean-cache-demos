@@ -19,7 +19,7 @@
 
 ## 本地调试
 
-首先确认本机已经安装 [Node.js](http://nodejs.org/) 运行环境和 [LeanCloud 命令行工具](https://leancloud.cn/docs/cloud_code_commandline.html)，在 LeanCloud 控制台上创建一个应用，将 appId 填充到下面的 `<appId>` 处，执行下列命令：
+首先确认本机已经安装 [Node.js](http://nodejs.org/) 运行环境和 [LeanCloud 命令行工具](https://leancloud.cn/docs/leanengine_cli.html)，在 LeanCloud 控制台上创建一个应用，将 appId 填充到下面的 `<appId>` 处，执行下列命令：
 
 ```
 $ git clone https://github.com/leancloud/lean-cache-demos.git
@@ -47,5 +47,5 @@ lean publish
 
 * [云引擎总览](https://leancloud.cn/docs/leanengine_overview.html)
 * [LeanCache 使用指南](https://leancloud.cn/docs/leancache_guide.html)
-* [JavaScript 指南](https://leancloud.cn/docs/js_guide.html)
+* [JavaScript 指南](https://leancloud.cn/docs/leanstorage_guide-js.html)
 * [云引擎命令行工具](https://leancloud.cn/docs/leanengine_cli.html)
