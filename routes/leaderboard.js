@@ -1,9 +1,9 @@
-var router = require('express').Router();
 var AV = require('leanengine');
 var moment = require('moment');
 var Promise = require('bluebird');
 
-var redisClient = require('../redisConn');
+var router = require('express').Router();
+var redisClient = require('../redis').redisClient;
 
 /*
  * 排行榜缓存示例

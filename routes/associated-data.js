@@ -1,9 +1,9 @@
-var router = require('express').Router();
 var AV = require('leanengine');
 var Promise = require('bluebird');
 var _ = require('underscore');
 
-var redisClient = require('../redisConn');
+var router = require('express').Router();
+var redisClient = require('../redis').redisClient;
 
 /*
  * 缓存关联数据示例
