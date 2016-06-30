@@ -1,12 +1,12 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title>Todo</title>
+    <title>LeanCache Node.js Demos</title>
     <link rel="stylesheet" href="/stylesheets/style.css">
   </head>
   <body>
     <h1>红包控制台</h1>
-    <form action="/moneyPackage/generate" method="POST">
+    <form action="/money-package/generate" method="POST">
       <span>总金额：</span><input type="text" name="total" value="100.00" />
       <span>总份数：</span><input type="text" name="count" value="10" />
       <input type="submit" value="生成" />
@@ -31,11 +31,11 @@
           <td><%= moneyPackage.createdAt %></td>
           <td>
             <% if (moneyPackage.get('status') === 'init') { %>
-              <form action="/moneyPackage/<%= moneyPackage.id%>/ready" method="POST">
+              <form action="/money-package/<%= moneyPackage.id%>/ready" method="POST">
                 <input type='submit' value='就绪' />
               </form>
             <% } else if (moneyPackage.get('status') === 'ready') { %>
-              <a href="/moneyPackage/<%= moneyPackage.id%>/rush">去抢</a>
+              <a href="/money-package/<%= moneyPackage.id%>/rush">去抢</a>
             <% } %>
           </td>
         </tr>

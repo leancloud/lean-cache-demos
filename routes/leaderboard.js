@@ -3,7 +3,7 @@ var AV = require('leanengine');
 var moment = require('moment');
 var Promise = require('bluebird');
 
-var redisClient = require('../redisConn');
+var redisClient = require('../redis').redisClient;
 
 /*
  * 排行榜缓存示例

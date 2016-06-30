@@ -3,7 +3,7 @@ var AV = require('leanengine');
 var Promise = require('bluebird');
 var _ = require('underscore');
 
-var redisClient = require('../redisConn');
+var redisClient = require('../redis').redisClient;
 
 /*
  * 缓存关联数据示例
