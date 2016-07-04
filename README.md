@@ -1,6 +1,6 @@
 # LeanCache Node.js Demos
 
-该项目是 [LeanCache](https://leancloud.cn/docs/leancache_guide.html) 的示例项目，包含了一些场景的使用场景，使用 Node.js 和 Express 实现。
+该项目是 [LeanCache](https://leancloud.cn/docs/leancache_guide.html) 的示例项目，包含了一些典型的使用场景，使用 Node.js 和 Express 实现。
 
 ## 功能
 
