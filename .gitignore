@@ -1,8 +1,10 @@
 node_modules
 start.sh
 .avoscloud
+.leancloud
 npm-debug.log
 
 # VIM
 *~
 *.swp
+.avoscloud/
