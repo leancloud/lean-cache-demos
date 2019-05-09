@@ -1,3 +1,10 @@
+# 注意
+
+该项目已被归档，后续将不再维护，请在 [leancloud/leanengine-nodejs-demos](https://github.com/leancloud/leanengine-nodejs-demos) 中查看有关 LeanCache 的最新示例。
+
+<details>
+<summary>以下为原 README 内容</summary>
+
 # LeanCache Node.js Demos
 
 该项目是 [LeanCache](https://leancloud.cn/docs/leancache_guide.html) 的示例项目，包含了一些典型的使用场景，使用 Node.js 和 Express 实现。
@@ -52,3 +59,4 @@ lean publish
 * [LeanCache 使用指南](https://leancloud.cn/docs/leancache_guide.html)
 * [JavaScript 指南](https://leancloud.cn/docs/leanstorage_guide-js.html)
 * [云引擎命令行工具](https://leancloud.cn/docs/leanengine_cli.html)
+</details>
